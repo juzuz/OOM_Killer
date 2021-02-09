@@ -111,22 +111,25 @@ The OOM score is determined by these factors, and the simple mathematical equati
 ![OOM_Badness](https://github.com/juzuz/OOM_Killer/blob/master/assets/OOM_score.PNG)
 
 🌕 The modified version follows similar steps
+
 Within the alloc_pages_nodemask step of the original process, I have added code to monitor the memory usage of each user. Therefore anytime memory is allocated, we will check whether a user has exceeded its memory limit. 
 
 The memory limits are stored within the kernal and is shared with the function.
 We recieve information on the uid and its limit and it triggers the new oom function when the memory exceeds the limit.
 
-MODIFIED_OOM FUNCTION
+**MODIFIED_OOM FUNCTION**
 
 The mod_oom function is written in the oom_kill.c file.
-This project did not use the oom_badness score to choose the "worst" process. Instead, it selects the task to kill by chooising the largest task that is not a root or kernel task.
+This project did not use the oom_badness score to choose the "worst" process. Instead, it selects the task to kill by choosing the largest task that is not a root or kernel task.
 
-While the oom function is in the process of terminating a task, the mod_oom is called multiple times within the timespan from when the first oom_kill is called and until it actually terminates a task. The task is killed by modifying the task's flag to <em>waiting to be killed</em>.
+While the oom function is in the process of terminating a task, the mod_oom function is called multiple times within the timespan from when the first oom_kill is called and until it actually terminates a task. The task is killed by modifying the task's flag to <em>waiting to be killed</em>.
 
-The kill is not completed immedietly, but has a duration before death. Therefore, we must check that the "worst" process we chose is not already designated to be killed, and if it is, then just skip the kill function and wait.
+The kill is not completed immedietly, but instead stays alive for a certain duration (Until the OS actually terminates the task). Therefore, we must check that the "worst" process we choose is not already waiting to be killed, and if it is, then just skip the kill function and wait.
 
 ## ⚡ How to Run the Project
-For testing sake, I ran this project on an AVD. After running the make in the goldfish kernel, we will endup with a .ko file. 
+**Replace all the files in the github repo with the ones in the goldfish kernel.**
+
+For testing sake, I ran this project on an AVD. After running the make in the goldfish kernel, we will end up with a .ko file. 
 Using the ADB, send the .ko and the executable test_func.c files to the avd.
 
 The files should be in the /data/misc folder in the avd.
