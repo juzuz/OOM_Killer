@@ -125,7 +125,12 @@ While the oom function is in the process of terminating a task, the mod_oom is c
 
 The kill is not completed immedietly, but has a duration before death. Therefore, we must check that the "worst" process we chose is not already designated to be killed, and if it is, then just skip the kill function and wait.
 
+## ⚡ How to Run the Project
+For testing sake, I ran this project on an AVD. After running the make in the goldfish kernel, we will endup with a .ko file. 
+Using the ADB, send the .ko and the executable test_func.c files to the avd.
 
+The files should be in the /data/misc folder in the avd.
+Run insmod *.ko to install the module and run the test_func.c
 
 
 
