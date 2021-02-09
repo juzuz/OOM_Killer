@@ -108,7 +108,7 @@ The OOM score is determined by these factors, and the simple mathematical equati
 >
 > *The highest score is maxed at 1000*
 
-![OOM_Badness](https://github.com/juzuz/OOM_Killer/blob/master/assets/OOM_Score.PNG)
+![OOM_Badness](https://github.com/juzuz/OOM_Killer/blob/master/assets/OOM_score.PNG)
 
 🌕 The modified version follows similar steps
 Within the alloc_pages_nodemask step of the original process, I have added code to monitor the memory usage of each user. Therefore anytime memory is allocated, we will check whether a user has exceeded its memory limit. 
