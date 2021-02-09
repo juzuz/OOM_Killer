@@ -796,7 +796,8 @@ static void clear_system_oom(void)
 			{
 				if(child->mm)
 				{
-					if(victim== NULL)
+					// Not a root or kernel process
+					if(victim == NULL && !(has_capability_noaudit(child, CAP_SYS_ADMIN)) )
 						victim = child;
 					else if(child->real_cred->uid == uid)
 					{

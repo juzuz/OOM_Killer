@@ -67,3 +67,71 @@ Save it and exit.
 **e. Compile**
 
 >make -j4
+
+**2. Creating System Call to set limit for users.**
+
+To assign the memory limit to a user, I will be using a system call function that takes in two parameters. 
+
+>asmlinkage long sys_MyLimit(uid_t uid, unsigned long mm_max)
+
+uid: is the user id
+
+mm_max for the maximum memory usage for the specified user.
+
+This system call is written within the sys_arm.c file and needs to be declared in the syscalls.h, calls.S and unistd.h files. I have assigned this system call with the number 59.
+
+
+**3. The modified OOM Killer.**
+
+The crux of this project was understanding the allocation of memory papges on the Linux system and procedures the OOM Killer has to go through before executing. This can be obeserved in the oom_kill.c and page_alloc.c files. 
+
+🌑 The orginal procedure for is as follows:
+
+> __alloc_pages() // Called anytime memory is allocated
+>   |--> __alloc_pages_nodemask()
+>       |--> __alloc_pages_may_oom()
+>           |--> out_of_memory() // Triggers the oom killer if OOM
+
+If the OOM killer is triggered the following heuristic is applied to find the "worst" process to kill:
+
+The key points of the heuristic is:
+
+- The process and its child process are using up a majority of the memory
+- Root, kernal and important process have a bias(3% down) to avoid lower the chances of being killed
+- Tasks marked as unkillable are avoided 
+- Wait if there is a task in the process of being terminated.
+*Root and kernal processes usually don't take up more than 3% memory*
+
+The OOM score is determined by these factors, and the simple mathematical equation is:
+
+> OOM_Badness = 10 * % memory used
+>
+> *The highest score is maxed at 1000*
+
+![OOM_Badness](https://github.com/juzuz/OOM_Killer/blob/master/assets/OOM_Score.PNG)
+
+🌕 The modified version follows similar steps
+Within the alloc_pages_nodemask step of the original process, I have added code to monitor the memory usage of each user. Therefore anytime memory is allocated, we will check whether a user has exceeded its memory limit. 
+
+The memory limits are stored within the kernal and is shared with the function.
+We recieve information on the uid and its limit and it triggers the new oom function when the memory exceeds the limit.
+
+MODIFIED_OOM FUNCTION
+
+The mod_oom function is written in the oom_kill.c file.
+This project did not use the oom_badness score to choose the "worst" process. Instead, it selects the task to kill by chooising the largest task that is not a root or kernel task.
+
+While the oom function is in the process of terminating a task, the mod_oom is called multiple times within the timespan from when the first oom_kill is called and until it actually terminates a task. The task is killed by modifying the task's flag to <em>waiting to be killed</em>.
+
+The kill is not completed immedietly, but has a duration before death. Therefore, we must check that the "worst" process we chose is not already designated to be killed, and if it is, then just skip the kill function and wait.
+
+
+
+
+
+
+
+
+
+
+
