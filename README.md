@@ -51,16 +51,16 @@ Save it and exit.
 
 Then you can see a GUI config. 
 
-![Capture1](/assets/Capture1.png)
+![Capture1](https://github.com/juzuz/OOM_Killer/blob/master/assets/Capture.PNG)
 
 Open the <em>Compile the kernel with debug info</em> in <em>Kernel hacking</em>
 
-![Capture2](/assets/Capture2.png)
+![Capture2](https://github.com/juzuz/OOM_Killer/blob/master/assets/Capture2.PNG)
 
 <em>Enable loadable module support</em> with <em>Forced module loading, Module unloading
 and Forced module unloading</em> in it. 
 
-![Capture3](/assets/Capture3.png)
+![Capture3](https://github.com/juzuz/OOM_Killer/blob/master/assets/Capture3.PNG)
 
 Save it and exit.
 
